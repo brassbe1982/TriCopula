@@ -323,7 +323,9 @@ test_that("cens_method = \"quadrature\" is the censored likelihood of 0.16.0; th
   f3 <- fit_mixed(d3, censoring = cens3, cens_nodes = c(24, 12, 8), cens_method = "quadrature")
   expect_equal(coef(f3), fx$fit$coef, tolerance = 1e-9)
   expect_equal(f3$logLik, fx$fit$logLik, tolerance = 1e-11)
-  expect_equal(vcov(f3), fx$fit$vcov, tolerance = 1e-7)
+  # numerically differentiated covariance: platform differences of ~1e-5
+  # relative (see test-regression.R); estimates and likelihood stay strict
+  expect_equal(vcov(f3), fx$fit$vcov, tolerance = 1e-3)
   expect_identical(f3$cens_method, "quadrature")
   expect_s3_class(f3$cens_accuracy, "tc_cens_check")
   # the check does not change the estimates

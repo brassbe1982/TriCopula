@@ -35,9 +35,15 @@ for (nm in names(fx$cases)) {
       expect_lt(abs(f$logLik - e$logLik), 1e-6)
       expect_lt(max(abs(unname(f$ifm$coefficients) - e$ifm_coefficients)), 1e-6)
       expect_lt(abs(f$ifm$logLik - e$ifm_logLik), 1e-6)
-      expect_lt(max(abs(unname(sqrt(diag(vcov(f)))) - e$se)), 1e-6)
+      # Standard errors come from a numerically differentiated score (finite
+      # differences for the pair copulas), accurate to about 3e-4 relative:
+      # on one machine a refit from a slightly shifted start moves them by up
+      # to 2.6e-4 relative while the coefficients agree to 1e-7, and other
+      # platforms differ by the same amount. They are therefore compared with
+      # a relative tolerance of 1e-3; estimates stay at 1e-6.
+      expect_lt(max(abs(unname(sqrt(diag(vcov(f)))) - e$se) / e$se), 1e-3)
       expect_lt(max(abs(unname(sqrt(diag(vcov(f, type = "sandwich")))) -
-                          e$se_sandwich)), 1e-6)
+                          e$se_sandwich) / e$se_sandwich), 1e-3)
       expect_lt(max(abs(unname(as.matrix(utils::head(predict(f, type = "mean"), 5))) -
                           e$fitted_mean_head)), 1e-6)
       expect_lt(max(abs(tc_dependence(f)$estimate - e$dependence)), 1e-5)

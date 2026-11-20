@@ -1,9 +1,21 @@
 # TriCopula 0.17.4
 
-Metadata only; no code or test changed.
+No change to the package code: estimates, likelihoods and defaults are
+those of 0.17.1.
 - `URL` and `BugReports` in `DESCRIPTION` point to the public repository
   <https://github.com/brassbe1982/TriCopula>.
 - `README.md`: installation from GitHub.
+- Tests: standard errors and covariance matrices are compared with the
+  stored results with a relative tolerance of 1e-3 (before: 1e-6 absolute,
+  or 1e-6 to 1e-7 relative). The first checks on Linux, macOS and Windows
+  Server (GitHub Actions) failed these comparisons only, by at most 2.3e-4,
+  while every estimate and log-likelihood agreed to 1e-6 or better. The
+  standard errors come from a numerically differentiated score and are
+  accurate to about 3e-4 relative: on one machine a refit from a slightly
+  shifted start moves them by up to 2.6e-4 relative. The earlier tolerance
+  held only because the arithmetic was identical. Estimates and
+  likelihoods are still compared at 1e-6 or tighter.
+- GitHub Actions: `actions/checkout@v5`.
 
 # TriCopula 0.17.3
 
