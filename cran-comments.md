@@ -1,16 +1,22 @@
 ## Submission
 
-This is a first submission of TriCopula (version 0.17.3).
+This is a first submission of TriCopula (version 0.17.4).
 
 ## Test environments
 
 * Local: Windows 11 x64 (build 26200), R 4.6.2 (2026-10-29 ucrt),
   `R CMD check --as-cran` on the tarball built by `R CMD build`.
-
-No other platform has been checked yet. [Maintainer to add before
-submission: the results of win-builder (R-devel), of R-hub or the GitHub
-Actions workflow in `.github/workflows/` (Linux, macOS), and of the macOS
-builder, once these have been run.]
+* GitHub Actions (`R CMD check --as-cran --no-manual`, complete test suite
+  with `NOT_CRAN = "true"`), run 2 of
+  <https://github.com/brassbe1982/TriCopula/actions>:
+  - Ubuntu 26.04, R-devel (2026-11-19 r90939), R 4.6.2 and R 4.5.3: OK
+  - macOS (arm64), R 4.6.2 and R 4.5.3: OK
+  - Windows Server 2022, R-devel, R 4.6.2 and R 4.5.3: OK
+  - macOS, R-devel: not checked; the runner could not compile the
+    dependency Matrix (`libintl.h` not found) before the check started.
+* win-builder, R-devel: [Maintainer to add the result from the e-mail.]
+* macOS builder: not run; its upload service returned HTTP 502 on
+  20 November 2026.
 
 ## R CMD check results
 

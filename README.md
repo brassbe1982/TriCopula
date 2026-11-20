@@ -352,9 +352,11 @@ integration with `mvtnorm` and `VineCopula`.
 8. `tc_jointprob()` evaluates one trivariate integral per distinct covariate
    row and is slow for large `newdata` with a Student-t copula.
 9. The KS tests in `tc_diagnostics()` ignore parameter estimation.
-10. Checked on one platform only (R 4.6.2 on Windows). A GitHub Actions
-    workflow for Windows, macOS and Linux on R release, devel and oldrel is
-    included (`.github/workflows/R-CMD-check.yaml`) but has not been run yet.
+10. `R CMD check` passes on Linux, macOS and Windows with R release and
+    oldrel, and on Linux and Windows with R-devel (GitHub Actions,
+    `.github/workflows/R-CMD-check.yaml`). Standard errors come from a
+    numerically differentiated score and agree across platforms to about
+    3e-4 relative; estimates agree to 1e-6 or better.
 
 ## Acknowledgment
 
