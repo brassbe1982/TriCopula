@@ -1,0 +1,6 @@
+^TriCopula\.Rproj$
+^\.Rproj\.user$
+^\.gitignore$
+^\.github$
+^tests/testthat/_problems$
+^cran-comments\.md$

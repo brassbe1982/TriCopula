@@ -1,0 +1,318 @@
+---
+title: "Trivariate copula regression with TriCopula"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Trivariate copula regression with TriCopula}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+has_plm <- requireNamespace("plm", quietly = TRUE)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = has_plm,
+                      fig.width = 6.5, fig.height = 3.6)
+old_options <- options(width = 100, digits = 4)
+```
+
+## What the package does
+
+`TriCopula` estimates a joint regression model for three continuous
+responses. Each response has its own distribution and its own regression
+equations, and a trivariate copula links the three:
+
+$$
+\log f(y_1, y_2, y_3 \mid x) = \sum_{j=1}^{3} \log f_j(y_j \mid x)
+  + \log c\{F_1(y_1 \mid x), F_2(y_2 \mid x), F_3(y_3 \mid x)\}.
+$$
+
+All parameters, of the margins and of the copula, are estimated together by
+maximum likelihood, so that one covariance matrix covers everything.
+
+| Component | Options |
+|---|---|
+| Margins | `gaussian`, `lognormal`, `gamma`, `weibull`, `invgauss`, `beta`, `gpareto`, `dagum`, `singhmaddala` |
+| Mean / location | linear predictor in each margin |
+| Scale / shape | linear predictor in each margin (`scale`) |
+| Third parameter | Dagum and Singh-Maddala margins: linear predictor (`shape`) |
+| Copula | trivariate `gaussian`, `student`, or pair-copula construction `pcc` |
+| Dependence | linear predictor for each dependence parameter (`dependence`) |
+| Degrees of freedom | constant, or a linear predictor (`df`) |
+| Vine root | first response, or `root = 2`, `3`; `tc_select(root = "auto")` |
+| Simplifying assumption | simplified vine, or `simplified = FALSE` (the conditional pair depends on the level of the root) |
+| Incomplete observation | `truncation` (known bounds per response), `censoring` (right, left, interval), missing responses |
+
+This is a research prototype. The related package **GJRM** offers
+`gjrm.pcc()`, which takes three fitted margins as given and then estimates a
+pair-copula construction step by step, with many more distributions, smooth
+terms and automatic family selection. `TriCopula` is narrower but estimates
+everything jointly. The two were checked against each other during
+development: on common models they evaluate the same likelihood.
+
+## Data: Spanish manufacturing firms
+
+The illustration uses the 1990 cross-section of the Spanish firm panel
+`Snmesp` shipped with the **plm** package (738 firms; Alonso-Borrego and
+Arellano, 1999). The three outcomes are output, employment and the average
+wage; the covariate is the capital stock (in logs, centred). The analysis is
+descriptive: it shows how the three outcomes vary jointly with capital, not
+a causal effect of capital.
+
+```{r data}
+library(TriCopula)
+data("Snmesp", package = "plm")
+firms <- subset(Snmesp, year == 1990)
+firms$output     <- exp(firms$y)
+firms$employment <- exp(firms$n)
+firms$wage       <- exp(firms$w)
+firms$capital    <- firms$k - mean(firms$k)
+summary(firms[c("output", "employment", "wage", "capital")])
+forms <- list(output ~ capital, employment ~ capital, wage ~ capital)
+```
+
+## Step 1: margins
+
+A fit is specified by three formulas and three margin names. Here every
+outcome is positive and right-skewed, so log-normal and Gamma margins are
+natural candidates; `tc_compare()` ranks alternatives by AIC and BIC.
+
+```{r margins}
+m_ln  <- tricopula(forms, firms, margins = c("lognormal", "lognormal", "lognormal"))
+m_mix <- tricopula(forms, firms, margins = c("lognormal", "gamma", "gamma"))
+m_ga  <- tricopula(forms, firms, margins = c("gamma", "gamma", "gamma"))
+tc_compare(m_ln, m_mix, m_ga)
+mar <- c("lognormal", "lognormal", "lognormal")
+```
+
+The log-normal margins have the lowest AIC and are kept.
+
+## Step 2: copula
+
+The Gaussian copula has no tail dependence, the Student-t copula has
+symmetric tail dependence, and a pair-copula construction (PCC) allows a
+different family for each pair, including the asymmetric Clayton and Gumbel
+families. `tc_select()` picks the three PCC families sequentially and then
+fits the selected PCC jointly.
+
+```{r copula}
+fit_g <- m_ln
+fit_t <- tricopula(forms, firms, margins = mar, copula = "student")
+sel   <- tc_select(forms, firms, margins = mar)
+sel$families
+subset(sel$table, selected)
+tc_compare(fit_g, fit_t, sel$fit)
+```
+
+Both heavier-tailed alternatives improve on the Gaussian copula. The
+trivariate Student-t copula is the more parsimonious of the two and is used
+below; the selected PCC tells the same story about the signs and sizes of
+the dependence.
+
+## Step 3: letting scale and dependence vary with capital
+
+`scale` adds a regression for the log standard deviation of each margin and
+`dependence` one for each dependence parameter. Nested models are compared
+with a likelihood-ratio test.
+
+```{r extend}
+fit_s <- tricopula(forms, firms, margins = mar, copula = "student",
+                   scale = ~ capital)
+fit_d <- tricopula(forms, firms, margins = mar, copula = "student",
+                   scale = ~ capital, dependence = ~ capital)
+tc_lrtest(fit_t, fit_s)
+tc_lrtest(fit_s, fit_d)
+tc_compare(fit_t, fit_s, fit_d)
+fit <- fit_d
+```
+
+## Results
+
+```{r summary}
+summary(fit)
+```
+
+The coefficient table is on the estimation scale (logs for scales, `atanh`
+for correlations). `tc_dependence()` gives the scale and dependence
+parameters on their natural scale, averaged over the sample, and
+`predict(type = "dependence")` shows how the dependence changes with
+capital.
+
+```{r dependence}
+round(tc_dependence(fit), 3)
+caps <- data.frame(capital = c(-2, 0, 2))
+cbind(caps, round(predict(fit, caps, type = "dependence"), 3))
+round(tc_taildep(fit), 3)
+```
+
+Reading the table (all correlations are between the outcomes at a given
+level of capital):
+
+- Output and employment are strongly positively dependent (`rho12`), and
+  output and wages moderately so (`rho13`).
+- `rho23|1` is the partial correlation between employment and wages given
+  output. It is clearly negative: among firms with the same capital and the
+  same output, those that employ more people pay lower average wages, which
+  is what lower labour productivity would produce. The correlation without
+  conditioning on output (`rho23`) is also negative but much weaker, because
+  both employment and wages rise with output.
+- The dependence between output and wages weakens as capital grows (second
+  table), which is the main reason the model with covariate-dependent
+  dependence is preferred.
+- The estimated degrees of freedom imply only weak tail dependence.
+
+### Marginal effects
+
+`tc_effects()` reports the average effect of a covariate on the three
+conditional means, allowing for its effect through the scale equations.
+
+```{r effects}
+tc_effects(fit, "capital")
+```
+
+### Joint probabilities
+
+The fitted joint distribution gives probabilities of joint events. Here: the
+probability that a firm is below the sample median on all three outcomes at
+once, for three levels of capital, compared with what independence between
+the outcomes would give.
+
+```{r jointprob}
+med <- sapply(firms[c("output", "employment", "wage")], median)
+joint <- tc_jointprob(fit, med, caps)
+pr <- predict(fit, caps)
+indep <- plnorm(med[1], pr$margin1$meanlog, pr$margin1$sdlog) *
+  plnorm(med[2], pr$margin2$meanlog, pr$margin2$sdlog) *
+  plnorm(med[3], pr$margin3$meanlog, pr$margin3$sdlog)
+cbind(caps, joint = round(joint, 3), if_independent = round(indep, 3))
+```
+
+## Checking the fit
+
+`tc_diagnostics()` collects the optimizer checks (convergence, gradient,
+information matrix), the gain of joint estimation over the two-stage
+estimator, and simple specification checks on the probability integral
+transforms.
+
+```{r diagnostics}
+tc_diagnostics(fit)
+```
+
+```{r pit, fig.cap = "Probability integral transforms of the three margins (uniform if the margins fit)."}
+u <- tc_pit(fit)
+op <- par(mfrow = c(1, 3), mar = c(4, 4, 2, 1))
+for (j in 1:3) hist(u[[j]], breaks = 15, main = c("output", "employment", "wage")[j],
+                    xlab = "PIT", col = "grey85", border = "white")
+par(op)
+```
+
+Two further checks are cheap and worth making routinely.
+
+**Sandwich standard errors.** If the copula family is wrong, model-based
+standard errors can be too small; sandwich standard errors remain valid.
+Large differences between the two are a warning sign.
+
+```{r sandwich}
+se <- cbind(model = sqrt(diag(vcov(fit))),
+            sandwich = sqrt(diag(vcov(fit, type = "sandwich"))))
+round(cbind(se, ratio = se[, 2] / se[, 1]), 3)
+```
+
+**Joint versus two-stage estimates.** `fit$ifm` holds the two-stage
+estimates (margins first, copula second). Under a correct model the two
+agree up to sampling noise; a systematic shift in the marginal intercepts
+points to a misspecified copula.
+
+```{r ifm}
+round(cbind(two_stage = fit$ifm$coefficients, joint = coef(fit),
+            difference_in_se = (coef(fit) - fit$ifm$coefficients) /
+              sqrt(diag(vcov(fit)))), 3)[1:12, ]
+```
+
+## Other tools
+
+```{r other, eval = FALSE}
+# bootstrap standard errors and percentile intervals (parametric or by rows)
+bt <- tc_bootstrap(fit, B = 200, type = "nonparametric")
+
+# simulate new responses for given covariates
+sim <- simulate(fit, newdata = caps, seed = 1)
+
+# a pair-copula construction with chosen families
+tricopula(forms, firms, margins = mar, copula = "pcc",
+          families = c("student", "gumbel", "gaussian"))
+
+# Frank and Joe pairs, the second response as root of the vine
+tricopula(forms, firms, margins = mar, copula = "pcc",
+          families = c("frank", "joe", "gaussian"), root = 2)
+
+# degrees of freedom that depend on a covariate
+tricopula(forms, firms, margins = mar, copula = "student", df = ~ capital)
+
+# families and root chosen by AIC (three joint fits)
+tc_select(forms, firms, margins = mar, candidates = "all", root = "auto")$roots
+
+# a penalized smooth of capital in the first mean and in one dependence parameter
+fs <- tricopula(list(output ~ s(capital), employment ~ capital, wage ~ capital),
+                firms, margins = mar, dependence = list(~ s(capital), ~ 1, ~ 1))
+summary(fs)$smooths
+plot(fit ~ capital, tc_smooth(fs, 1), type = "l")
+# intervals that allow for the uncertainty of the smoothing parameters
+tc_smooth(fs, 1, type = "corrected")
+
+# prior weights; rows with one or two missing responses kept. Weights that
+# are not whole numbers count as sampling weights: sandwich standard errors
+# tricopula(forms, firms, margins = mar, weights = w, missing = "likelihood")
+
+# inference that allows for the selection of the families
+# tc_bootstrap(sel$fit, B = 200, type = "nonparametric", select = TRUE)
+# tc_select(forms, firms, margins = mar, split = 0.5, seed = 1)$fit
+# the margins, the terms of the mean formulas and the copula type can be
+# selected too; the bootstrap then also reports tail dependence and means
+# tc_select(forms, firms, margins = list("lognormal", c("lognormal", "gamma"), "lognormal"),
+#           covariates = "backward", copula = "auto")
+
+# a non-simplified vine: the dependence of the conditional pair varies with
+# the level of the first response; test of the simplifying assumption
+# ns <- tricopula(forms, firms, margins = mar, copula = "pcc",
+#                 families = sel$families, simplified = FALSE)
+# tc_smooth(ns, 1); tc_simplifying_test(sel$fit)
+
+# censored and truncated responses: `status` is 1 for an exact value, 0 for
+# a right-censored one; only firms with output above `a` are in the sample
+# tricopula(forms, firms, margins = mar,
+#           censoring = list(NULL, c(status = "status"), NULL),
+#           truncation = list(c(a, Inf), NULL, NULL), truncation_type = "joint")
+
+# three-parameter margins for heavy-tailed positive responses
+tricopula(forms, firms, margins = c("dagum", "singhmaddala", "lognormal"),
+          shape = list(~ capital, ~ 1, ~ 1))
+
+# other margins, e.g. a share in (0, 1)
+# tricopula(list(share ~ x, y2 ~ x, y3 ~ x), d, margins = c("beta", "gamma", "weibull"))
+```
+
+## Limits to keep in mind
+
+- Intervals and tests for smooth terms are approximate.
+- A predictor for the Student-t degrees of freedom (`df`) needs a large
+  sample to be estimated with any precision.
+- In a PCC the families and the root are chosen by the user or by
+  `tc_select()`; the standard errors of that fit do not account for the
+  selection. `tc_select(split = )` and `tc_bootstrap(select = TRUE)` do.
+- Joint estimation is more efficient than two-stage estimation when the
+  model is right, and can be biased when the copula is wrong, most visibly
+  under strong asymmetric tail dependence fitted with a symmetric copula.
+- Censoring and truncation are available since 0.16.0; rows with several
+  censored responses are slow. One censored response per row is integrated
+  in closed form (default since 0.17.1); every fit reports the accuracy of its quadrature in
+  `fit$cens_accuracy`. Missing responses are handled under the
+  assumption that they are missing at random (`missing = "likelihood"`).
+
+## Reference
+
+Alonso-Borrego, C. and Arellano, M. (1999). Symmetrically normalized
+instrumental-variable estimation using panel data. *Journal of Business and
+Economic Statistics*, 17(1), 36-49.
+
+```{r reset, include = FALSE, eval = TRUE}
+options(old_options)
+```

@@ -1,0 +1,50 @@
+Package: TriCopula
+Type: Package
+Title: Joint Maximum-Likelihood Trivariate Copula Regression
+Version: 0.17.4
+Authors@R: c(
+    person("Ibrahim", "Niankara", role = c("aut", "cre"),
+           email = "Ibrahim.niankara@aaua.ac.ae"),
+    person("BRASS Digital Lab", role = "fnd",
+           comment = "LLC registered in Burkina Faso, RCCM BF-OUA-01-2026-B13-02466; https://brassbe1982-bdlweb.share.connect.posit.cloud/"))
+Description: Full maximum-likelihood estimation of copula distributional
+    regression models for three continuous responses. The margins are
+    Gaussian, log-normal, Gamma, Weibull, inverse Gaussian, Beta, generalized
+    Pareto, Dagum or Singh-Maddala, with a predictor for every parameter.
+    Dependence is described by a trivariate Gaussian or Student-t copula, or
+    by a C-vine pair-copula construction as in Aas, Czado, Frigessi and Bakken
+    (2009) <doi:10.1016/j.insmatheco.2007.02.001> with Gaussian, Student-t,
+    Clayton, Gumbel, Frank and Joe pair copulas and their rotations, whose
+    parameters may depend on covariates as in the copula additive models of
+    Marra and Radice (2017) <doi:10.1016/j.csda.2017.03.004>. All parameters
+    are estimated jointly, with analytic gradients, observed-information and
+    sandwich covariance matrices. Predictors may contain penalized smooth
+    terms; the likelihood accommodates prior weights, responses missing at
+    random, truncation and censoring. Functions for model selection and
+    inference after selection, a test of the simplifying assumption, joint
+    probabilities, marginal effects, diagnostics and simulation are provided.
+URL: https://github.com/brassbe1982/TriCopula
+BugReports: https://github.com/brassbe1982/TriCopula/issues
+License: MIT + file LICENSE
+Depends:
+    R (>= 3.5.0)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.1
+Imports:
+    numDeriv,
+    parallel,
+    splines,
+    stats
+Suggests:
+    knitr,
+    mgcv,
+    mvtnorm,
+    plm,
+    rmarkdown,
+    survival,
+    VGAM,
+    VineCopula,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
