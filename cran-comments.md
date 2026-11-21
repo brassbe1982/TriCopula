@@ -17,7 +17,9 @@ the corrected address.
   - Windows Server 2022, R-devel, R 4.6.2 and R 4.5.3: OK
   - macOS, R-devel: not checked; the runner could not compile the
     dependency Matrix (`libintl.h` not found) before the check started.
-* win-builder, R-devel: [result of the 0.17.5 upload, to be entered]
+* win-builder, R-devel (2026-11-17 r90926 ucrt), Windows Server 2022:
+  1 NOTE (new submission; possibly misspelled words, see below); tests,
+  vignette and manual OK.
 * macOS builder: not run; its upload service returned HTTP 502 on
   20 November 2026.
 
