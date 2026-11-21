@@ -14,7 +14,9 @@ This is a first submission of TriCopula (version 0.17.4).
   - Windows Server 2022, R-devel, R 4.6.2 and R 4.5.3: OK
   - macOS, R-devel: not checked; the runner could not compile the
     dependency Matrix (`libintl.h` not found) before the check started.
-* win-builder, R-devel: [Maintainer to add the result from the e-mail.]
+* win-builder, R-devel: uploaded on 20 November 2026; the result had not
+  been received when this package was submitted. Windows with R-devel was
+  checked in GitHub Actions (above): OK.
 * macOS builder: not run; its upload service returned HTTP 502 on
   20 November 2026.
 
@@ -58,5 +60,5 @@ in total) call `testthat::skip_on_cran()`; they run when `NOT_CRAN` is
   happens only on a cluster supplied by the user (`tc_bootstrap(cl = )`).
 * Nothing is written outside `tempdir()`, and the vignette restores the
   options it sets.
-* [Maintainer to add before submission: `URL` and `BugReports` fields in
-  DESCRIPTION, once the public repository exists.]
+* Source and issue tracker: <https://github.com/brassbe1982/TriCopula>
+  (`URL` and `BugReports` in DESCRIPTION).
