@@ -1,6 +1,9 @@
 ## Submission
 
-This is a first submission of TriCopula (version 0.17.4).
+This is a first submission of TriCopula (version 0.17.5). A submission of
+0.17.4 on 21 November 2026 could not be confirmed because the maintainer
+address in its DESCRIPTION was mistyped; 0.17.5 differs from it only in
+the corrected address.
 
 ## Test environments
 
@@ -14,9 +17,7 @@ This is a first submission of TriCopula (version 0.17.4).
   - Windows Server 2022, R-devel, R 4.6.2 and R 4.5.3: OK
   - macOS, R-devel: not checked; the runner could not compile the
     dependency Matrix (`libintl.h` not found) before the check started.
-* win-builder, R-devel: uploaded on 20 November 2026; the result had not
-  been received when this package was submitted. Windows with R-devel was
-  checked in GitHub Actions (above): OK.
+* win-builder, R-devel: [result of the 0.17.5 upload, to be entered]
 * macOS builder: not run; its upload service returned HTTP 502 on
   20 November 2026.
 
@@ -25,7 +26,7 @@ This is a first submission of TriCopula (version 0.17.4).
 0 errors | 0 warnings | 2 notes
 
 * `checking CRAN incoming feasibility ... NOTE`
-  `Maintainer: 'Ibrahim Niankara <Ibrahim.niankara@aaua.ac.ae>'`
+  `Maintainer: 'Ibrahim Niankara <Ibrahim.niankara@aau.ac.ae>'`
   `New submission`
 
   This is a first submission.

@@ -1,4 +1,4 @@
-# TriCopula 0.17.4 - research prototype
+# TriCopula 0.17.5 - research prototype
 
 Full maximum-likelihood regression for three continuous responses linked by
 a trivariate Gaussian or Student-t copula, or by a pair-copula construction
@@ -158,7 +158,7 @@ Source and issue tracker: <https://github.com/brassbe1982/TriCopula>.
 # from GitHub
 install.packages("remotes")
 remotes::install_github("brassbe1982/TriCopula")
-# or from a source tarball:  R CMD INSTALL TriCopula_0.17.4.tar.gz
+# or from a source tarball:  R CMD INSTALL TriCopula_0.17.5.tar.gz
 install.packages("mvtnorm")   # suggested; needed for tc_jointprob()
 
 library(TriCopula)

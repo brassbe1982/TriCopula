@@ -1,3 +1,8 @@
+# TriCopula 0.17.5
+
+- Corrected maintainer e-mail address in `DESCRIPTION`:
+  Ibrahim.niankara@aau.ac.ae. Nothing else changed.
+
 # TriCopula 0.17.4
 
 No change to the package code: estimates, likelihoods and defaults are
