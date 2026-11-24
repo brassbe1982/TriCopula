@@ -13,6 +13,11 @@ No change to the package code.
 - GitHub Actions: macOS R-devel installs only the hard dependencies and
   checks with `_R_CHECK_FORCE_SUGGESTS_=false` (the fix used for
   SwitchEconometrics).
+- The slow test of a covariate-dependent Student-t df (`test-df-formula.R`)
+  checks z-scores only for the identified parameters, and for the two df
+  coefficients only when their standard errors exist: the df of the
+  second group (true value 14) is weakly identified at n = 2500, and on
+  Windows with R 4.5.3 the fit stopped at df 64.7 with NA standard errors.
 
 # TriCopula 0.17.5
 
