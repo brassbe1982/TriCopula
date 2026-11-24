@@ -1,7 +1,7 @@
 Package: TriCopula
 Type: Package
 Title: Joint Maximum-Likelihood Trivariate Copula Regression
-Version: 0.17.5
+Version: 0.17.6
 Authors@R: c(
     person("Ibrahim", "Niankara", role = c("aut", "cre"),
            email = "Ibrahim.niankara@aau.ac.ae"),

@@ -1,3 +1,11 @@
+# TriCopula 0.17.6
+
+Documentation only; no code or test changed.
+- The package help page (`?TriCopula`), `README.md` and the vignette list
+  the author's applied studies of jointly modelled outcomes (2019 to 2025)
+  under "Related publications by the author", with DOIs checked against
+  Crossref.
+
 # TriCopula 0.17.5
 
 - Corrected maintainer e-mail address in `DESCRIPTION`:

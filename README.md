@@ -1,4 +1,4 @@
-# TriCopula 0.17.5 - research prototype
+# TriCopula 0.17.6 - research prototype
 
 Full maximum-likelihood regression for three continuous responses linked by
 a trivariate Gaussian or Student-t copula, or by a pair-copula construction
@@ -158,7 +158,7 @@ Source and issue tracker: <https://github.com/brassbe1982/TriCopula>.
 # from GitHub
 install.packages("remotes")
 remotes::install_github("brassbe1982/TriCopula")
-# or from a source tarball:  R CMD INSTALL TriCopula_0.17.5.tar.gz
+# or from a source tarball:  R CMD INSTALL TriCopula_0.17.6.tar.gz
 install.packages("mvtnorm")   # suggested; needed for tc_jointprob()
 
 library(TriCopula)
@@ -366,6 +366,45 @@ under Trade Register (RCCM) BF-OUA-01-2026-B13-02466 and Social Security
 Fund (CNSS) 1493318 R, with registered office at 02 BP 5444, Ouagadougou 02,
 Secteur 33, Lot 13, Section 762, Lot 28, Burkina Faso. Website:
 <https://brassbe1982-bdlweb.share.connect.posit.cloud/>.
+
+## Related publications by the author
+
+Applied studies by the package author on interdependent economic and
+social decisions, which motivated the package. They model several binary
+outcomes jointly (multivariate probit and logit models and copula models,
+mostly estimated with GJRM); TriCopula addresses the joint estimation of
+three continuous responses.
+
+- Niankara, I. and Traoret, R. I. (2019). Formal education and the
+  contemporaneous dynamics of literacy, labour market participation and
+  poverty reduction in Burkina Faso. *International Journal of Education
+  Economics and Development*, 10(2), 148-172.
+  <https://doi.org/10.1504/IJEED.2019.098679>
+- Niankara, I. (2022). Empirical analysis of the global supply and demand
+  of entrepreneurial finance: a random utility theory perspective.
+  *Journal of Open Innovation: Technology, Market, and Complexity*, 8(1),
+  26. <https://doi.org/10.3390/joitmc8010026>
+- Niankara, I. (2022). Government and private sectors' electronic transfer
+  practices and financial inclusion in the economic community of the West
+  African States. *International Journal of Finance & Economics*, 27(4),
+  4018-4047. <https://doi.org/10.1002/ijfe.2357>
+- Niankara, I., Zoungrana, T. D. and Traoret, R. I. (2023). Health and
+  environmental consciousness effects of wealth in low income countries:
+  evidence from households' energy, water, and sanitation services
+  consumption in Burkina Faso. *International Journal of Economic Policy in
+  Emerging Economies*, 17(3), 307-332.
+  <https://doi.org/10.1504/IJEPEE.2023.131037>
+- Niankara, I., Zoungrana, D. T. and Traoret, R. I. (2024). COVID-19
+  preventive policy preferences and households self-reported preventive
+  behaviors during the pandemic: evidence from Burkina Faso. In *2024
+  Global Digital Health Knowledge Exchange & Empowerment Conference
+  (gDigiHealth.KEE)*, pp. 1-13. IEEE.
+  <https://doi.org/10.1109/gDigiHealth.KEE62309.2024.10761690>
+- Niankara, I., Rahrouh, M. N. and Traoret, R. I. (2025). Formal financial
+  inclusion and the nexus between access to mobile and smart
+  telecommunication services and usage of mobile financial services among
+  women in Burkina Faso post-COVID-19 era. *Human Behavior and Emerging
+  Technologies*, 2025(1), 6040068. <https://doi.org/10.1155/hbe2/6040068>
 
 ## Regression baseline
 
