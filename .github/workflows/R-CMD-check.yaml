@@ -1,6 +1,14 @@
 # R CMD check on Windows, macOS and Linux for R release, devel and oldrel.
 # This package directory is the root of the repository
 # https://github.com/brassbe1982/TriCopula.
+#
+# macOS R-devel runs without the suggested packages: on that runner Matrix
+# does not compile from source (November 2026), and Matrix comes in only
+# through suggested packages. The job installs the hard dependencies plus
+# what the check, the tests and the vignette need, and checks with
+# _R_CHECK_FORCE_SUGGESTS_=false; tests that need a suggested package skip,
+# and the vignette is not evaluated without plm. (The same fix as in
+# SwitchEconometrics.)
 on:
   push:
     branches: [main, master]
@@ -25,7 +33,7 @@ jobs:
           - {os: windows-latest, r: 'devel'}
           - {os: windows-latest, r: 'oldrel-1'}
           - {os: macos-latest,   r: 'release'}
-          - {os: macos-latest,   r: 'devel'}
+          - {os: macos-latest,   r: 'devel', deps: '"hard"', extra: 'any::rcmdcheck, any::testthat, any::knitr, any::rmarkdown', force-suggests: 'false'}
           - {os: macos-latest,   r: 'oldrel-1'}
           - {os: ubuntu-latest,  r: 'release'}
           - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
@@ -34,6 +42,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      _R_CHECK_FORCE_SUGGESTS_: ${{ matrix.config.force-suggests || 'true' }}
 
     steps:
       - uses: actions/checkout@v5
@@ -48,7 +57,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          dependencies: ${{ matrix.config.deps || '"all"' }}
+          extra-packages: ${{ matrix.config.extra || 'any::rcmdcheck' }}
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2

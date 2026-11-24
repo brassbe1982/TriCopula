@@ -223,6 +223,7 @@ test_that("selection of margins, covariates and copula type against references",
 
 test_that("bootstrap with selection: derived quantities, conditional parameters, all steps", {
   skip_on_cran()
+  skip_if_not_installed("mvtnorm")
   d <- sim_sel2()
   s <- tc_select(fm_sel, d)
   nd <- data.frame(x = 0)

@@ -1,10 +1,18 @@
 # TriCopula 0.17.6
 
-Documentation only; no code or test changed.
+No change to the package code.
 - The package help page (`?TriCopula`), `README.md` and the vignette list
   the author's applied studies of jointly modelled outcomes (2019 to 2025)
   under "Related publications by the author", with DOIs checked against
   Crossref.
+- Two slow tests that compute joint probabilities (non-simplified vine;
+  bootstrap with selection) call `skip_if_not_installed("mvtnorm")`: with
+  the complete test suite and no suggested packages they errored (found
+  when GitHub Actions on macOS R-devel was set to run without the
+  suggested packages, as Matrix does not compile there).
+- GitHub Actions: macOS R-devel installs only the hard dependencies and
+  checks with `_R_CHECK_FORCE_SUGGESTS_=false` (the fix used for
+  SwitchEconometrics).
 
 # TriCopula 0.17.5
 

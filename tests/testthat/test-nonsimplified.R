@@ -133,6 +133,7 @@ test_that("non-simplified fit: score, nesting, test, smooth and post-estimation"
 
 test_that("non-simplified vine: sampler, joint probability and missing root", {
   skip_on_cran()
+  skip_if_not_installed("mvtnorm")
   d <- sim_ns(400, f = function(u) 0.8 * cos(2 * pi * u), seed = 302)
   f1 <- tricopula(fm_ns, d, copula = "pcc", families = fam_ns, simplified = FALSE,
                   k_cond = 6, hessian = FALSE)
